@@ -12,8 +12,7 @@ A dispatcher must ensure that all chunks have finished executing before it retur
 ### Discrete tasks
 For workloads expressed as independent tasks rather than indexed chunks, task_submitter_type provides an interface for submitting a collection of parameterless tasks. The run_inline function executes such a collection serially.
 
-Adapting a task scheduler
-
+### Adapting a task scheduler
 The dispatcher_of and submitter_of functions adapt an existing task scheduler or thread pool to these interfaces. They expect the pool to provide run_and_wait and add_tasks, respectively.
 
 These adapters capture the supplied pool by reference, so the pool must outlive the resulting interface object.
