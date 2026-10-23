@@ -1,5 +1,5 @@
 # jfc-dispatch
-A header-only work-dispatch interface that allows a library to parallelize work using worker threads supplied by its caller, while falling back to serial execution if no worker threads are supplied. The idea is to be able to take advantage of multithreading, but without a library itself directly owning its own threads (this is not scalable) and without forcing the user to use one threading strategy or another in particular.
+A header-only work-dispatch interface that allows a library to parallelize work using worker threads supplied by its caller, while falling back to serial execution if no worker threads are supplied. The idea is to be able to take advantage of multithreading, but without a library itself directly owning its own threads and without forcing the user to use one threading strategy or another in particular.
 
 ## Overview
 jfc-dispatch provides two interfaces for dispatching work to a task scheduler or thread pool.
