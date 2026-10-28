@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #include <jfc/catch.hpp>
 
@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include <utility>
 #include <vector>
 
 using namespace jfc::dispatch;
@@ -204,16 +205,28 @@ TEST_CASE("**a run with threads is the serial run**, exceptions included (code-s
 
     REQUIRE(squares(withThreads.dispatcher(), 64) == squares({}, 64));
 
-    const auto throwing_at = [](const task_dispatcher_type &aDispatcher) {
-        return thrown_by([&] {
-            run(aDispatcher, 32, [](const std::size_t &aIndex) {
-                if (aIndex == 17) throw std::invalid_argument("seventeen");
+    const auto throwing_at = [](const task_dispatcher_type &aDispatcher, const std::size_t aThrower) {
+        tally counted(32);
+
+        const auto thrown = thrown_by([&] {
+            run(aDispatcher, 32, [&](const std::size_t &aIndex) {
+                counted.ran(aIndex);
+
+                if (aIndex == aThrower) throw std::invalid_argument("thrown");
             });
         });
+
+        return std::make_pair(thrown, counted.times);
     };
 
-    REQUIRE(throwing_at({}) == "seventeen");
-    REQUIRE(throwing_at(withThreads.dispatcher()) == "seventeen");
+    for (const std::size_t thrower : {std::size_t{0}, std::size_t{17}, std::size_t{31}}) {
+        const auto serial = throwing_at({}, thrower);
+
+        REQUIRE(serial.first == "thrown");
+        REQUIRE(serial.second == std::vector<int>(32, 1));
+        REQUIRE(throwing_at(withThreads.dispatcher(), thrower) == serial);
+    }
+
     REQUIRE_FALSE(withThreads.escaped);
 }
 
@@ -232,6 +245,35 @@ TEST_CASE("**the serial submitter runs each task now**, in order, on the calling
 
     REQUIRE(order == std::vector<int>{0, 1, 2});
     REQUIRE(threads == std::set<std::thread::id>{std::this_thread::get_id()});
+
+    SECTION("**every task runs though one throws**, and the first thrown comes out after") {
+        std::vector<int> ran;
+
+        std::vector<task_type> throwing;
+
+        for (int i = 0; i < 4; ++i) throwing.emplace_back([&, i] {
+            ran.push_back(i);
+
+            if (i == 1 || i == 2) throw std::runtime_error(std::to_string(i));
+        });
+
+        REQUIRE(thrown_by([&] { run_inline(std::move(throwing)); }) == "1");
+        REQUIRE(ran == std::vector<int>{0, 1, 2, 3});
+    }
+}
+
+TEST_CASE("**a dispatcher that throws** is let through, after the chunks it ran", "[dispatch]") {
+    tally counted(4);
+
+    const task_dispatcher_type refusing = [](const std::size_t aCount, const chunk_type &aChunk) {
+        for (std::size_t i = 0; i < aCount; ++i) aChunk(i);
+
+        throw std::runtime_error("the dispatcher's own");
+    };
+
+    REQUIRE(thrown_by([&] { run(refusing, 4, [&](const std::size_t &aIndex) { counted.ran(aIndex); }); })
+        == "the dispatcher's own");
+    REQUIRE(counted.times == std::vector<int>(4, 1));
 }
 
 TEST_CASE("**a pool's threads lent**, as a dispatcher and as a submitter", "[dispatch]") {

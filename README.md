@@ -1,6 +1,25 @@
 # jfc-dispatch
 A header-only work-dispatch interface that allows a library to parallelize work using worker threads supplied by its caller, while falling back to serial execution if no worker threads are supplied. The idea is to be able to take advantage of multithreading, but without a library itself directly owning its own threads and without forcing the user to use one threading strategy or another in particular.
 
+API documentation: https://jfcameron.github.io/jfc-dispatch/
+
+## Getting Started
+Install cmake 3.21 or greater, and a c++20 compatible compiler
+```
+# initialize the tree
+git submodule update --init --recursive
+
+# generate the script to build the library and its tests on linux using gcc
+cmake --preset linux-gcc
+
+# build the library and tests
+cmake --build --preset linux-gcc
+
+# run the test suite
+ctest --preset linux-gcc
+```
+See `CMakePresets.json` for the full list of supported platforms and compilers. See `.github/workflows/ci.yml` to see exactly how CI runners build it on different platforms.
+
 ## Overview
 jfc-dispatch provides two interfaces for dispatching work to a task scheduler or thread pool.
 

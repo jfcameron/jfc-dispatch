@@ -1,15 +1,15 @@
-# © Joseph Cameron - All Rights Reserved
+# © Joseph Cameron - MIT License
 
 cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
-project(jfcdispatch
-    VERSION 0.1
-    DESCRIPTION "how a caller lends a library its threads: one dispatch vocabulary, and code-style §7.1 kept once"
-    LANGUAGES CXX)
-
-if (TARGET jfcdispatch)
+if (TARGET jfc::dispatch)
     return()
 endif()
+
+project(jfcdispatch
+    VERSION 1.0.0
+    DESCRIPTION "lets a caller lend a library its threads, and runs serially when it lends none"
+    LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
@@ -34,29 +34,29 @@ target_compile_features(jfcdispatch INTERFACE cxx_std_20)
 
 include(CMakePackageConfigHelpers)
 
-install(TARGETS jfcdispatch EXPORT jfcdispatch-targets)
+install(TARGETS jfcdispatch EXPORT jfc-dispatch-targets)
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
-install(EXPORT jfcdispatch-targets
-    FILE jfcdispatch-targets.cmake
+install(EXPORT jfc-dispatch-targets
+    FILE jfc-dispatch-targets.cmake
     NAMESPACE jfc::
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/jfcdispatch")
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/jfc-dispatch")
 
 write_basic_package_version_file(
-    "${PROJECT_BINARY_DIR}/jfcdispatch-config-version.cmake"
+    "${PROJECT_BINARY_DIR}/jfc-dispatch-config-version.cmake"
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion
     ARCH_INDEPENDENT)
 
-file(WRITE "${PROJECT_BINARY_DIR}/jfcdispatch-config.cmake"
-"include(\"\${CMAKE_CURRENT_LIST_DIR}/jfcdispatch-targets.cmake\")
+file(WRITE "${PROJECT_BINARY_DIR}/jfc-dispatch-config.cmake"
+"include(\"\${CMAKE_CURRENT_LIST_DIR}/jfc-dispatch-targets.cmake\")
 ")
 
 install(FILES
-    "${PROJECT_BINARY_DIR}/jfcdispatch-config.cmake"
-    "${PROJECT_BINARY_DIR}/jfcdispatch-config-version.cmake"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/jfcdispatch")
+    "${PROJECT_BINARY_DIR}/jfc-dispatch-config.cmake"
+    "${PROJECT_BINARY_DIR}/jfc-dispatch-config-version.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/jfc-dispatch")
 
 if (JFCDISPATCH_BUILD_TESTS)
     add_subdirectory(test)

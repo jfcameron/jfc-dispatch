@@ -1,4 +1,4 @@
-# © Joseph Cameron - All Rights Reserved
+# © Joseph Cameron - MIT License
 
 find_package(Threads REQUIRED)
 
@@ -22,6 +22,8 @@ if (NOT CMAKE_CROSSCOMPILING)
             "-DWORK_DIR=${CMAKE_CURRENT_BINARY_DIR}/install_and_consume"
             "-DCONFIG=$<CONFIG>"
             "-DGENERATOR=${CMAKE_GENERATOR}"
+            "-DPLATFORM=${CMAKE_GENERATOR_PLATFORM}"
+            "-DTOOLSET=${CMAKE_GENERATOR_TOOLSET}"
             "-DCXX_COMPILER=${CMAKE_CXX_COMPILER}"
             "-DCXX_FLAGS=${CMAKE_CXX_FLAGS}"
             "-DEXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS}"

@@ -1,10 +1,10 @@
-# © Joseph Cameron - All Rights Reserved
+# © Joseph Cameron - MIT License
 
 cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
 project(jfcdispatch_consumer LANGUAGES CXX)
 
-find_package(jfcdispatch REQUIRED)
+find_package(jfc-dispatch 1 REQUIRED)
 
 add_executable(consumer main.cpp)
 
